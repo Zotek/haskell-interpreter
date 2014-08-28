@@ -1,0 +1,4 @@
+.idea/
+*.pyc
+*.out
+src/interpreter/parsetab.py
