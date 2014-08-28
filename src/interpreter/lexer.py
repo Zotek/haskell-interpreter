@@ -1,16 +1,21 @@
 import ply.lex as lex
 
-tokens = (
-    'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'LPAREN', 'RPAREN'
+keywords = ('TRUE','FALSE','NOT')
+
+tokens = keywords + (
+    'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'LPAREN', 'RPAREN', 'OR', 'AND', 'BOOL'
 )
 
 t_PLUS = r'\+'
 t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
-t_EQUALS = r'='
+t_EQUALS = r'=='
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
+t_OR = r'\|\|'
+t_AND = r'\&\&'
+t_NOT = r'not'
 
 
 def t_NUMBER(t):
@@ -22,6 +27,13 @@ def t_NUMBER(t):
         t.value = 0
     return t
 
+def t_BOOL(t):
+    r'True|False'
+    if(t.value=='True'):
+        t.value = True
+    else:
+        t.value = False
+    return t
 
 t_ignore = " \t"
 

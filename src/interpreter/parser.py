@@ -2,6 +2,10 @@ import ply.yacc as yacc
 
 from lexer import tokens
 
+def p_general_expression(p):
+    '''generalexpression : expression
+                          | boolexpr'''
+    p[0] = p[1]
 
 def p_expression_plus(p):
     'expression : expression PLUS term'
@@ -42,9 +46,36 @@ def p_factor_expr(p):
     'factor : LPAREN expression RPAREN'
     p[0] = p[2]
 
-# Error rule for syntax errors
-def p_error(p):
-    print "Syntax error in input!"
+def p_boolexpr_boolterm(p):
+    'boolexpr : boolterm'
+    p[0] = p[1]
+
+def p_bool_or(p):
+    'boolexpr : boolexpr OR boolterm'
+    p[0] = p[1] or p[3]
+
+def p_bool_and(p):
+    'boolexpr : boolexpr AND boolterm'
+    p[0] = p[1] and p[3]
+
+
+def p_not_boolterm(p):
+    'boolterm : NOT boolterm'
+    p[0] = not p[2]
+
+def p_boolterm_boolval(p):
+    'boolterm : boolval'
+    p[0] = p[1]
+
+def p_boolval_bool(p):
+    'boolval : BOOL'
+    p[0] = p[1]
+
+def p_boolval_boolexpr(p):
+    'boolval : LPAREN boolexpr RPAREN'
+    p[0] = p[2]
+
+
 
 # Build the parser
 parser = yacc.yacc()
