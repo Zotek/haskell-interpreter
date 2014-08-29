@@ -7,6 +7,8 @@ def p_general_expression(p):
                           | boolexpr'''
     p[0] = p[1]
 
+#integer arithmetics
+
 def p_expression_plus(p):
     'expression : expression PLUS term'
     p[0] = p[1] + p[3]
@@ -46,6 +48,9 @@ def p_factor_expr(p):
     'factor : LPAREN expression RPAREN'
     p[0] = p[2]
 
+
+#bool arithmetics
+
 def p_boolexpr_boolterm(p):
     'boolexpr : boolterm'
     p[0] = p[1]
@@ -75,7 +80,35 @@ def p_boolval_boolexpr(p):
     'boolval : LPAREN boolexpr RPAREN'
     p[0] = p[2]
 
+#integer comparison
 
+def p_boolval_comparison(p):
+    'boolval : comparison'
+    p[0] = p[1]
+
+def p_gt_comparison(p):
+    'comparison : NUMBER GT NUMBER'
+    p[0] = p[1] > p[3]
+
+def p_lt_comparison(p):
+    'comparison : NUMBER LT NUMBER'
+    p[0] = p[1] < p[3]
+
+def p_ge_comparison(p):
+    'comparison : NUMBER GE NUMBER'
+    p[0] = p[1] >= p[3]
+
+def p_le_comparison(p):
+    'comparison : NUMBER LE NUMBER'
+    p[0] = p[1] <= p[3]
+
+def p_eq_comparison(p):
+    'comparison : NUMBER EQUALS NUMBER'
+    p[0] = p[1] == p[3]
+
+def p_neq_comparison(p):
+    'comparison : NUMBER NEQUALS NUMBER'
+    p[0] = p[1] != p[3]
 
 # Build the parser
 parser = yacc.yacc()
