@@ -1,10 +1,10 @@
 import ply.lex as lex
 
-keywords = ('TRUE', 'FALSE', 'NOT')
+keywords = ('TRUE', 'FALSE', 'NOT', 'IN', 'LET', 'WHERE')
 
 tokens = keywords + (
     'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'NEQUALS', 'LPAREN', 'RPAREN', 'OR', 'AND', 'BOOL', 'GT', 'LT', 'GE',
-    'LE'
+    'LE', 'NAME', 'ASSIGN', 'COMMA'
 )
 
 t_PLUS = r'\+'
@@ -17,11 +17,12 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_OR = r'\|\|'
 t_AND = r'\&\&'
-t_NOT = r'not'
 t_GT = r'>'
 t_LT = r'<'
 t_GE = r'>='
 t_LE = r'<='
+t_ASSIGN = r'='
+t_COMMA = r','
 
 def t_NUMBER(t):
     r'\d+'
@@ -39,6 +40,18 @@ def t_BOOL(t):
         t.value = True
     else:
         t.value = False
+    return t
+
+RESERVED = {
+  "not": "NOT",
+  "let": "LET",
+  "where" : "WHERE",
+  "in" : "IN"
+  }
+
+def t_NAME(t):
+    r'[a-zA-Z_][a-zA-Z0-9_]*'
+    t.type = RESERVED.get(t.value, "NAME")
     return t
 
 
