@@ -18,39 +18,49 @@ def p_command_assignment(p):
 def p_expression(p):
     '''expression : let-assignment IN expression
                     | expression_           '''
-    pass
+    if(len(p) == 4):
+        lowerlvlexp = p[3]
+        updatedVariables = lowerlvlexp[0].update(p[1])
+        p[0] = (updatedVariables,p[1])
+    else:
+        p[0] = p[1]
 
 def p_expression_(p):
-    '''expression_ : value
-                    | value where-assignment'''
-    pass
+    '''expression_ : value'''
+                    #| value where-assignment'''
+    p[0] = p[1]
 
 def p_let_assignment(p):
     '''let-assignment : LET assignment-list
     '''
-    pass
+    p[0] = p[2]
 
-def p_where_assignment(p):
-    '''where-assignment : WHERE assignment-list
-    '''
-    pass
+#def p_where_assignment(p):
+#    '''where-assignment : WHERE assignment-list
+#    '''
+#    pass
 
 def p_assignment_list(p):
     '''assignment-list : assignment
                         | assignment COMMA assignment-list
     '''
-    pass
+    if(len(p)==2):
+        p[0] = p[1]
+    else:
+        p[0] = {}
+        p[0].update(p[3])
 
 def p_assignment(p):
-    '''assignment : NAME EQUALS value'''
-    pass
+    '''assignment : NAME ASSIGN value'''
+    p[0] = {p[1] : p[3]}
 
 def p_value(p):
-    '''value : '''
+    '''value : NUMBER'''
+    p[0] = p[1]
     pass
-#
+
 #def p_name(p):
-#    'factor : NAME'
+#    'value : NAME'
 #    try:
 #        p[0] = globalvariables[p[1]]
 #    except KeyError:
