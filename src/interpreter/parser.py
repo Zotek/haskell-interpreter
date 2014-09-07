@@ -2,9 +2,20 @@ import ply.yacc as yacc
 
 from lexer import tokens
 
+
+_globals = {
+    'fst': (lambda x: x[0] if isinstance(x, tuple) and len(x) == 2 else None),
+    'snd': (lambda x: x[1] if isinstance(x, tuple) and len(x) == 2 else None)
+}
+
+
 def p_general_expression(p):
     '''generalexpression : expression
-                          | boolexpr'''
+                          | boolexpr
+                          | tuple
+                          | STRING
+                          | CHAR'''
+
     p[0] = p[1]
 
 #integer arithmetics
@@ -48,6 +59,23 @@ def p_factor_expr(p):
     'factor : LPAREN expression RPAREN'
     p[0] = p[2]
 
+#tuples and lists
+
+def p_tuple(p):
+    'tuple : LPAREN sequence RPAREN'
+    p[0] = tuple(p[2])
+
+def p_sequence(p):
+    'sequence : generalexpression COMMA generalexpression'
+    p[0] = [p[1], p[3]]
+
+def p_sequence_generalexpression(p):
+    'sequence : sequence COMMA generalexpression'
+    p[0] = p[1] + [p[3]]
+
+def p_generalexpression_IDENTIFIER(p):
+    'generalexpression : IDENTIFIER generalexpression'
+    p[0] = _globals.get(p[1])(p[2])
 
 #bool arithmetics
 

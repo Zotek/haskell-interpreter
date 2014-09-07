@@ -4,7 +4,7 @@ keywords = ('TRUE', 'FALSE', 'NOT')
 
 tokens = keywords + (
     'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'NEQUALS', 'LPAREN', 'RPAREN', 'OR', 'AND', 'BOOL', 'GT', 'LT', 'GE',
-    'LE'
+    'LE', 'SUCC', 'MIN', 'COMMA', 'STRING', 'CHAR', 'IDENTIFIER'
 )
 
 t_PLUS = r'\+'
@@ -12,7 +12,7 @@ t_MINUS = r'-'
 t_TIMES = r'\*'
 t_DIVIDE = r'/'
 t_EQUALS = r'=='
-t_NEQUALS = r'!='
+t_NEQUALS = r'/='
 t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_OR = r'\|\|'
@@ -22,6 +22,7 @@ t_GT = r'>'
 t_LT = r'<'
 t_GE = r'>='
 t_LE = r'<='
+t_COMMA = r','
 
 def t_NUMBER(t):
     r'\d+'
@@ -32,6 +33,19 @@ def t_NUMBER(t):
         t.value = 0
     return t
 
+def t_STRING(t):
+    r'\"[^\"]*\"'
+    t.value = t.value[1:-1]
+    return t
+
+def t_CHAR(t):
+    r'\'[^\']\''
+    t.value = t.value[1]
+    return t
+
+def t_IDENTIFIER(t):
+    r'[a-zA-Z][a-zA-Z0-9]*'
+    return t
 
 def t_BOOL(t):
     r'True|False'
