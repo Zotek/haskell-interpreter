@@ -1,5 +1,6 @@
 import ply.yacc as yacc
-
+import ast
+import nodeVisitor
 from lexer import tokens
 
 
@@ -12,7 +13,6 @@ _globals = {
 def p_general_expression(p):
     '''generalexpression : expression
                           | boolexpr
-                          | tuple
                           | STRING
                           | CHAR'''
 
@@ -20,14 +20,12 @@ def p_general_expression(p):
 
 #integer arithmetics
 
-def p_expression_plus(p):
-    'expression : expression PLUS term'
-    p[0] = p[1] + p[3]
+def p_expression_operation(p):
+    '''expression : expression PLUS term
+                  | expression MINUS term'''
+    operator = ast.Add if p[2]=="+" else ast.Sub
+    p[0] = ast.BinOp(p[1],operator,p[3])
 
-
-def p_expression_minus(p):
-    'expression : expression MINUS term'
-    p[0] = p[1] - p[3]
 
 
 def p_expression_term(p):
@@ -35,14 +33,12 @@ def p_expression_term(p):
     p[0] = p[1]
 
 
-def p_term_times(p):
-    'term : term TIMES factor'
-    p[0] = p[1] * p[3]
+def p_term_operation(p):
+    '''term : term TIMES factor
+            | term DIVIDE factor'''
+    operator = ast.Mult if p[2]=="*" else ast.Div
+    p[0] = ast.BinOp(p[1],operator,p[3])
 
-
-def p_term_div(p):
-    'term : term DIVIDE factor'
-    p[0] = p[1] / p[3]
 
 
 def p_term_factor(p):
@@ -52,30 +48,30 @@ def p_term_factor(p):
 
 def p_factor_num(p):
     'factor : NUMBER'
-    p[0] = p[1]
+    p[0] = ast.Num(p[1])
 
 
 def p_factor_expr(p):
     'factor : LPAREN expression RPAREN'
     p[0] = p[2]
 
-#tuples and lists
-
-def p_tuple(p):
-    'tuple : LPAREN sequence RPAREN'
-    p[0] = tuple(p[2])
-
-def p_sequence(p):
-    'sequence : generalexpression COMMA generalexpression'
-    p[0] = [p[1], p[3]]
-
-def p_sequence_generalexpression(p):
-    'sequence : sequence COMMA generalexpression'
-    p[0] = p[1] + [p[3]]
-
-def p_generalexpression_IDENTIFIER(p):
-    'generalexpression : IDENTIFIER generalexpression'
-    p[0] = _globals.get(p[1])(p[2])
+# #tuples and lists
+#
+# def p_tuple(p):
+#     'tuple : LPAREN sequence RPAREN'
+#     p[0] = tuple(p[2])
+#
+# def p_sequence(p):
+#     'sequence : generalexpression COMMA generalexpression'
+#     p[0] = [p[1], p[3]]
+#
+# def p_sequence_generalexpression(p):
+#     'sequence : sequence COMMA generalexpression'
+#     p[0] = p[1] + [p[3]]
+#
+# def p_generalexpression_IDENTIFIER(p):
+#     'generalexpression : IDENTIFIER generalexpression'
+#     p[0] = _globals.get(p[1])(p[2])
 
 #bool arithmetics
 
@@ -140,7 +136,7 @@ def p_neq_comparison(p):
 
 # Build the parser
 parser = yacc.yacc()
-
+visitor = nodeVisitor.HaskellASTVisitor()
 while True:
     try:
         s = raw_input('> ')
@@ -148,11 +144,9 @@ while True:
         break
     if not s: continue
     result = parser.parse(s)
-    print result
+    print visitor.visit(result)
 
 
 def p_error(p):
     print "Syntax error in input"
 
-
-parser = yacc.yacc()
