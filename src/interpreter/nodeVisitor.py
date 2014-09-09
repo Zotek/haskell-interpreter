@@ -32,3 +32,14 @@ class HaskellASTVisitor(ast.NodeVisitor):
             return self.visit(node.values[0]) or self.visit(node.values[1])
         elif node.op == ast.Not:
             return not self.visit(node.values[0])
+
+    def visit_Compare(self, node):
+        operator = node.ops[0]
+        left = self.visit(node.left)
+        right = self.visit(node.comparators[0])
+        if operator == ast.Gt : return left > right
+        elif operator == ast.GtE : return left >= right
+        elif operator == ast.Lt : return  left < right
+        elif operator == ast.LtE : return  left <= right
+        elif operator == ast.Eq : return left == right
+        elif operator == ast.NotEq : return left != right

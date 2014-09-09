@@ -9,6 +9,14 @@ _globals = {
     'snd': (lambda x: x[1] if isinstance(x, tuple) and len(x) == 2 else None)
 }
 
+def p_statement(p):
+    '''statement : generalexpression
+                 | assignment'''
+    p[0] = p[1]
+
+def p_assignment(p):
+    '''assignment : LET IDENTIFIER ASSIGN generalexpression'''
+    p[0] = ast.Assign(p[2],p[4])
 
 def p_general_expression(p):
     '''generalexpression : expression
@@ -110,29 +118,21 @@ def p_boolval_comparison(p):
     'boolval : comparison'
     p[0] = p[1]
 
-def p_gt_comparison(p):
-    'comparison : NUMBER GT NUMBER'
-    p[0] = p[1] > p[3]
-
-def p_lt_comparison(p):
-    'comparison : NUMBER LT NUMBER'
-    p[0] = p[1] < p[3]
-
-def p_ge_comparison(p):
-    'comparison : NUMBER GE NUMBER'
-    p[0] = p[1] >= p[3]
-
-def p_le_comparison(p):
-    'comparison : NUMBER LE NUMBER'
-    p[0] = p[1] <= p[3]
-
-def p_eq_comparison(p):
-    'comparison : NUMBER EQUALS NUMBER'
-    p[0] = p[1] == p[3]
-
-def p_neq_comparison(p):
-    'comparison : NUMBER NEQUALS NUMBER'
-    p[0] = p[1] != p[3]
+def p_comparison(p):
+    '''comparison : expression GT expression
+                  | expression LT expression
+                  | expression GE expression
+                  | expression LE expression
+                  | expression EQUALS expression
+                  | expression NEQUALS expression'''
+    operator = None
+    if p[2] == ">": operator = ast.Gt
+    elif p[2] == ">=": operator = ast.GtE
+    elif p[2] == "<": operator = ast.Lt
+    elif p[2] == "<=": operator = ast.LtE
+    elif p[2] == "==": operator = ast.Eq
+    elif p[2] == "!=": operator = ast.NotEq
+    p[0] = ast.Compare(p[1],[operator],[p[3]])
 
 # Build the parser
 parser = yacc.yacc()
