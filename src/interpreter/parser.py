@@ -81,16 +81,16 @@ def p_boolexpr_boolterm(p):
 
 def p_bool_or(p):
     'boolexpr : boolexpr OR boolterm'
-    p[0] = p[1] or p[3]
+    p[0] = ast.BoolOp(ast.Or,[p[1],p[3]])
 
 def p_bool_and(p):
     'boolexpr : boolexpr AND boolterm'
-    p[0] = p[1] and p[3]
+    p[0] = ast.BoolOp(ast.And,[p[1],p[3]])
 
 
 def p_not_boolterm(p):
     'boolterm : NOT boolterm'
-    p[0] = not p[2]
+    p[0] = ast.BoolOp(ast.Not,[p[2]])
 
 def p_boolterm_boolval(p):
     'boolterm : boolval'
@@ -98,7 +98,7 @@ def p_boolterm_boolval(p):
 
 def p_boolval_bool(p):
     'boolval : BOOL'
-    p[0] = p[1]
+    p[0] = ast.BoolOp(None,[p[1]])
 
 def p_boolval_boolexpr(p):
     'boolval : LPAREN boolexpr RPAREN'

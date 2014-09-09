@@ -17,7 +17,7 @@ t_LPAREN = r'\('
 t_RPAREN = r'\)'
 t_OR = r'\|\|'
 t_AND = r'\&\&'
-t_NOT = r'not'
+t_NOT = r'!'
 t_GT = r'>'
 t_LT = r'<'
 t_GE = r'>='
@@ -43,9 +43,9 @@ def t_CHAR(t):
     t.value = t.value[1]
     return t
 
-def t_IDENTIFIER(t):
-    r'[a-zA-Z][a-zA-Z0-9]*'
-    return t
+# def t_IDENTIFIER(t):
+#     r'[a-zA-Z][a-zA-Z0-9]*'
+#     return t
 
 def t_BOOL(t):
     r'True|False'
