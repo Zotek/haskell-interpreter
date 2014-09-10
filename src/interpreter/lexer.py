@@ -4,7 +4,7 @@ keywords = ('TRUE', 'FALSE', 'NOT', 'LET')
 
 tokens = keywords + (
     'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'NEQUALS', 'LPAREN', 'RPAREN', 'OR', 'AND', 'BOOL', 'GT', 'LT', 'GE',
-    'LE', 'SUCC', 'MIN', 'COMMA', 'STRING', 'CHAR', 'IDENTIFIER', 'ASSIGN'
+    'LE', 'COMMA', 'STRING', 'CHAR', 'IDENTIFIER', 'ASSIGN', 'LBRACKET', 'RBRACKET', 'COLON', 'INDEX', 'CONCAT'
 )
 
 RESERVED = {
@@ -28,6 +28,11 @@ t_GE = r'>='
 t_LE = r'<='
 t_COMMA = r','
 t_ASSIGN = r'='
+t_LBRACKET = r'\['
+t_RBRACKET = r'\]'
+t_COLON = r':'
+t_INDEX = r'!!'
+t_CONCAT = r'\+\+'
 
 def t_NUMBER(t):
     r'\d+'
