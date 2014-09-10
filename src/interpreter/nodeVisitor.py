@@ -1,8 +1,18 @@
 import ast
 
 class HaskellASTVisitor(ast.NodeVisitor):
+    _globalVariables = {}
+
+
     def generic_visit(self, node):
         return node
+
+    def visit_Assign(self,node):
+        self._globalVariables[node.targets[0]]=node.value
+        return self.visit(node.value)
+
+    def visit_Name(self,node):
+        return self.visit(self._globalVariables[node.id])
 
     def visit_BinOp(self,node):
         operator = node.op
@@ -19,7 +29,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
         return result
 
     def visit_Num(self, node):
-        return node.n
+        return self.visit(node.n)
 
     def visit_BoolOp(self,node):
         if len(node.values)<1:

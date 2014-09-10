@@ -14,6 +14,10 @@ def p_statement(p):
                  | assignment'''
     p[0] = p[1]
 
+# def p_fundef(p):
+#     '''fundef : IDENTIFIER argument-list ASSIGN statement'''
+#     p[0] =
+
 def p_assignment(p):
     '''assignment : LET IDENTIFIER ASSIGN generalexpression'''
     p[0] = ast.Assign(p[2],p[4])
@@ -25,6 +29,7 @@ def p_general_expression(p):
                           | CHAR'''
 
     p[0] = p[1]
+
 
 #integer arithmetics
 
@@ -55,8 +60,12 @@ def p_term_factor(p):
 
 
 def p_factor_num(p):
-    'factor : NUMBER'
+    '''factor : NUMBER'''
     p[0] = ast.Num(p[1])
+
+def p_factor_var(p):
+    '''factor : IDENTIFIER'''
+    p[0] = ast.Name(p[1],ast.Load)
 
 
 def p_factor_expr(p):
@@ -105,8 +114,12 @@ def p_boolterm_boolval(p):
     p[0] = p[1]
 
 def p_boolval_bool(p):
-    'boolval : BOOL'
+    '''boolval : BOOL'''
     p[0] = ast.BoolOp(None,[p[1]])
+
+def p_boolval_var(p):
+    '''boolval : IDENTIFIER'''
+    p[0] = ast.Name(p[1],ast.Load)
 
 def p_boolval_boolexpr(p):
     'boolval : LPAREN boolexpr RPAREN'
