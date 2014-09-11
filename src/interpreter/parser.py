@@ -11,13 +11,36 @@ _globals = {
 
 def p_statement(p):
     '''statement : generalexpression
-                 | assignment'''
+                 | assignment
+                 | fundef'''
     p[0] = p[1]
 
-# def p_fundef(p):
-#     '''fundef : IDENTIFIER argument-list ASSIGN statement'''
-#     p[0] =
 
+#functions
+def p_fundef(p):
+    '''fundef : IDENTIFIER argument-list ASSIGN generalexpression'''
+    p[0] = ast.FunctionDef(p[1],p[2],p[4],None)
+
+def p_argument_list(p):
+    '''argument-list : IDENTIFIER argument-list
+                     | IDENTIFIER
+    '''
+    if len(p) == 2: p[0] = [p[1]]
+    elif len(p) == 3: p[0] = [p[1]] + p[2]
+
+def p_parameters(p):
+    '''parameters : atom parameters
+                  | atom
+    '''
+    if len(p) == 2: p[0] = [p[1]]
+    elif len(p) == 3: p[0] = [p[1]] + p[2]
+
+def p_funcall(p):
+    '''funcall : IDENTIFIER parameters
+    '''
+    p[0] = ast.Call(p[1],p[2],None,None,None)
+
+#general
 def p_assignment(p):
     '''assignment : LET IDENTIFIER ASSIGN generalexpression'''
     p[0] = ast.Assign(p[2],p[4])
@@ -26,10 +49,22 @@ def p_general_expression(p):
     '''generalexpression : expression
                           | boolexpr
                           | STRING
-                          | CHAR'''
+                          | CHAR
+                          | funcall'''
 
     p[0] = p[1]
 
+def p_atom_id(p):
+    '''atom : IDENTIFIER'''
+    p[0] = ast.Name(p[1],None)
+
+def p_atom_number(p):
+    '''atom : NUMBER'''
+    p[0] = ast.Num(p[1])
+
+def p_atom_bool(p):
+    '''atom : BOOL'''
+    p[0] = ast.BoolOp(None,[p[1]])
 
 #integer arithmetics
 
@@ -59,13 +94,10 @@ def p_term_factor(p):
     p[0] = p[1]
 
 
-def p_factor_num(p):
-    '''factor : NUMBER'''
-    p[0] = ast.Num(p[1])
 
-def p_factor_var(p):
-    '''factor : IDENTIFIER'''
-    p[0] = ast.Name(p[1],ast.Load)
+def p_factor_atom(p):
+    '''factor : atom'''
+    p[0] = p[1]
 
 
 def p_factor_expr(p):
@@ -113,13 +145,9 @@ def p_boolterm_boolval(p):
     'boolterm : boolval'
     p[0] = p[1]
 
-def p_boolval_bool(p):
-    '''boolval : BOOL'''
-    p[0] = ast.BoolOp(None,[p[1]])
-
-def p_boolval_var(p):
-    '''boolval : IDENTIFIER'''
-    p[0] = ast.Name(p[1],ast.Load)
+def p_boolval_atom(p):
+    '''boolval : atom'''
+    p[0] = p[1]
 
 def p_boolval_boolexpr(p):
     'boolval : LPAREN boolexpr RPAREN'
