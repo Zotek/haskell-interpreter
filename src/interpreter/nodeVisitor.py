@@ -2,7 +2,62 @@ import ast
 
 class HaskellASTVisitor(ast.NodeVisitor):
     _globalVariables = {}
-    _functions = {}
+    _functions = {
+        'fst': ast.FunctionDef(
+            'fst',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(0)), ast.Load()),
+            None
+        ),
+        'snd': ast.FunctionDef(
+            'snd',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(1)), ast.Load()),
+            None
+        ),
+        'take': ast.FunctionDef(
+            'take',
+            ['n', 'l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(None, ast.Name('n', ast.Load), None), ast.Load()),
+            None
+        ),
+        'drop': ast.FunctionDef(
+            'drop',
+            ['n', 'l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(ast.Name('n', ast.Load), None, None), ast.Load()),
+            None
+        ),
+        'reverse': ast.FunctionDef(
+            'reverse',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(None, None, ast.Num(-1)), ast.Load()),
+            None
+        ),
+        'init': ast.FunctionDef(
+            'init',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(None, ast.Num(-1), None), ast.Load()),
+            None
+        ),
+        'tail': ast.FunctionDef(
+            'tail',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(ast.Num(1), None, None), ast.Load()),
+            None
+        ),
+        'last': ast.FunctionDef(
+            'last',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(-1)), ast.Load()),
+            None
+        ),
+        'head': ast.FunctionDef(
+            'head',
+            ['l'],
+            ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(0)), ast.Load()),
+            None
+        ),
+    }
     _funVariablesStack = []
 
 
@@ -73,7 +128,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
         retval = self.visit(fun.body)
         self._funVariablesStack.pop(0)
         return retval
-        
+
     def visit_Tuple(self, node):
         return tuple(map(lambda x: self.visit(x), node.elts))
 
@@ -83,6 +138,17 @@ class HaskellASTVisitor(ast.NodeVisitor):
     def visit_Subscript(self, node):
         if(isinstance(node.slice, ast.Index)):
             return self.visit(node.value)[self.visit(node.slice)]
+        if(isinstance(node.slice, ast.Slice)):
+            [lower, upper, step] = self.visit(node.slice)
+            return self.visit(node.value)[lower:upper:step]
+
 
     def visit_Index(self, node):
         return self.visit(node.value)
+
+
+    def visit_Slice(self, node):
+        lower = self.visit(node.lower)
+        upper = self.visit(node.upper)
+        step = self.visit(node.step)
+        return [lower, upper, step]
