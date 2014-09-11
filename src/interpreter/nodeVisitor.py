@@ -73,3 +73,16 @@ class HaskellASTVisitor(ast.NodeVisitor):
         retval = self.visit(fun.body)
         self._funVariablesStack.pop(0)
         return retval
+        
+    def visit_Tuple(self, node):
+        return tuple(map(lambda x: self.visit(x), node.elts))
+
+    def visit_List(self, node):
+        return map(lambda x: self.visit(x), node.elts)
+
+    def visit_Subscript(self, node):
+        if(isinstance(node.slice, ast.Index)):
+            return self.visit(node.value)[self.visit(node.slice)]
+
+    def visit_Index(self, node):
+        return self.visit(node.value)
