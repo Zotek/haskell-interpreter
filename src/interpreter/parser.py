@@ -54,7 +54,6 @@ def p_general_expression(p):
                           | boolexpr
                           | STRING
                           | CHAR
-                          | funcall
                           | tuple
                           | list'''
 
@@ -71,6 +70,10 @@ def p_atom_number(p):
 def p_atom_bool(p):
     '''atom : BOOL'''
     p[0] = ast.BoolOp(None,[p[1]])
+
+def p_atom_funcall(p):
+    '''atom : funcall'''
+    p[0] = p[1]
 
 #integer arithmetics
 
