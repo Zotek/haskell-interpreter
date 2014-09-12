@@ -35,7 +35,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
         return result
 
     def visit_Num(self, node):
-        return self.visit(node.n)
+        return self.visit(node.n) if not isinstance(node.n,int) else node.n
 
     def visit_BoolOp(self,node):
         if len(node.values)<1:
@@ -69,7 +69,8 @@ class HaskellASTVisitor(ast.NodeVisitor):
 
     def visit_Call(self, node):
         fun = self._functions[node.func]
-        self._funVariablesStack.insert(0,dict(zip(fun.args,node.args)))
+        parameters = map(lambda x : self.visit(x),node.args)
+        self._funVariablesStack.insert(0,dict(zip(fun.args,parameters)))
         retval = self.visit(fun.body)
         self._funVariablesStack.pop(0)
         return retval
@@ -86,3 +87,9 @@ class HaskellASTVisitor(ast.NodeVisitor):
 
     def visit_Index(self, node):
         return self.visit(node.value)
+
+    def visit_If(self, node):
+        if self.visit(node.test):
+            return self.visit(node.body)
+        else:
+            return self.visit(node.orelse)

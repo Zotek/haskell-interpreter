@@ -15,6 +15,10 @@ def p_statement(p):
                  | fundef'''
     p[0] = p[1]
 
+def p_if(p):
+    '''generalexpression : IF boolexpr THEN generalexpression ELSE generalexpression
+    '''
+    p[0] = ast.If(p[2],p[4],p[6])
 
 #functions
 def p_fundef(p):
@@ -29,8 +33,8 @@ def p_argument_list(p):
     elif len(p) == 3: p[0] = [p[1]] + p[2]
 
 def p_parameters(p):
-    '''parameters : atom parameters
-                  | atom
+    '''parameters : generalexpression parameters
+                  | generalexpression
     '''
     if len(p) == 2: p[0] = [p[1]]
     elif len(p) == 3: p[0] = [p[1]] + p[2]
