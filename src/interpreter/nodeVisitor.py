@@ -149,12 +149,15 @@ class HaskellASTVisitor(ast.NodeVisitor):
         return map(lambda x: self.visit(x), node.elts)
 
     def visit_Subscript(self, node):
-        if(isinstance(node.slice, ast.Index)):
-            return self.visit(node.value)[self.visit(node.slice)]
-        if(isinstance(node.slice, ast.Slice)):
-            [lower, upper, step] = self.visit(node.slice)
-            return self.visit(node.value)[lower:upper:step]
+        if node.value is None:
+            (lower, upper, step) = self.visit(node.slice)
+            return range(lower, upper + 1, step)
 
+        if isinstance(node.slice, ast.Index):
+            return self.visit(node.value)[self.visit(node.slice)]
+        if isinstance(node.slice, ast.Slice):
+            (lower, upper, step) = self.visit(node.slice)
+            return self.visit(node.value)[lower:upper:step]
 
     def visit_Index(self, node):
         return self.visit(node.value)

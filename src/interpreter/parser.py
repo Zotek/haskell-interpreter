@@ -156,6 +156,14 @@ def p_list_CONCAT(p):
     'list : list CONCAT list'
     p[0] = ast.List(p[1].elts + p[3].elts, ast.Store())
 
+def p_list_range(p):
+    '''list : LBRACKET generalexpression COMMA generalexpression RANGE generalexpression RBRACKET
+            | LBRACKET generalexpression RANGE generalexpression RBRACKET'''
+    if len(p) == 8:
+        p[0] = ast.Subscript(None, ast.Slice(p[2], p[6], ast.BinOp(p[4], ast.Sub, p[2])), ast.Load())
+    else:
+        p[0] = ast.Subscript(None, ast.Slice(p[2], p[4], ast.Num(1)), ast.Load())
+
 #bool arithmetics
 
 def p_boolexpr_boolterm(p):
