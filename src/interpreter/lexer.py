@@ -1,6 +1,6 @@
 import ply.lex as lex
 
-keywords = ('TRUE', 'FALSE', 'NOT', 'LET')
+keywords = ('TRUE', 'FALSE', 'NOT', 'LET', 'IF', 'THEN', 'ELSE')
 
 tokens = keywords + (
     'NUMBER', 'PLUS', 'MINUS', 'TIMES', 'DIVIDE', 'EQUALS', 'NEQUALS', 'LPAREN', 'RPAREN', 'OR', 'AND', 'BOOL', 'GT', 'LT', 'GE',
@@ -8,7 +8,10 @@ tokens = keywords + (
 )
 
 RESERVED = {
-    'let' : 'LET'
+    'let' : 'LET',
+    'if'  : 'IF',
+    'then': 'THEN',
+    'else': 'ELSE'
 }
 
 t_PLUS = r'\+'
