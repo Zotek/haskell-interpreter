@@ -93,7 +93,10 @@ class HaskellASTVisitor(ast.NodeVisitor):
         if operator == ast.Add:
             result = self.visit(node.left) + self.visit(node.right)
         elif operator == ast.Sub:
-            result = self.visit(node.left) - self.visit(node.right)
+            if isinstance(node.left, str):
+                result = ord(self.visit(node.left)) - ord(self.visit(node.right))
+            else:
+                result = self.visit(node.left) - self.visit(node.right)
         elif operator == ast.Div:
             result = self.visit(node.left) / self.visit(node.right)
         elif operator == ast.Mult:
@@ -151,7 +154,12 @@ class HaskellASTVisitor(ast.NodeVisitor):
     def visit_Subscript(self, node):
         if node.value is None:
             (lower, upper, step) = self.visit(node.slice)
-            return range(lower, upper + 1, step)
+            if isinstance(lower, str):
+                lower = ord(lower)
+                upper = ord(upper)
+                return map(lambda x: chr(x), range(lower, upper + 1, step))
+            else:
+                return range(lower, upper + 1, step)
 
         if isinstance(node.slice, ast.Index):
             return self.visit(node.value)[self.visit(node.slice)]
