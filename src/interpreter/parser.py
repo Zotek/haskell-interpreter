@@ -4,10 +4,6 @@ import nodeVisitor
 from lexer import tokens
 
 
-# _globals = {
-#     'fst': (lambda x: x[0] if isinstance(x, tuple) and len(x) == 2 else None),
-#     'snd': (lambda x: x[1] if isinstance(x, tuple) and len(x) == 2 else None)
-# }
 
 def p_statement(p):
     '''statement : generalexpression
@@ -73,6 +69,15 @@ def p_atom_bool(p):
 
 def p_atom_funcall(p):
     '''atom : funcall'''
+    p[0] = p[1]
+
+def p_atom_list(p):
+    '''atom : list'''
+    p[0] = p[1]
+
+
+def p_atom_tuple(p):
+    '''atom : tuple'''
     p[0] = p[1]
 
 #integer arithmetics
