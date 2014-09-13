@@ -129,6 +129,14 @@ def p_list(p):
     'list : LBRACKET sequence RBRACKET'
     p[0] = ast.List(p[2], ast.Store())
 
+def p_list_singleelem(p):
+    'list : LBRACKET generalexpression RBRACKET'
+    p[0] = ast.List([p[2]], ast.Store())
+
+def p_list_empty(p):
+    'list : LBRACKET RBRACKET'
+    p[0] = ast.List([], ast.Store())
+
 def p_list_prepand(p):
     'list : generalexpression COLON list'
     p[0] = ast.List([p[1]] + p[3].elts, ast.Store())
@@ -179,12 +187,12 @@ def p_boolval_comparison(p):
     p[0] = p[1]
 
 def p_comparison(p):
-    '''comparison : expression GT expression
-                  | expression LT expression
-                  | expression GE expression
-                  | expression LE expression
-                  | expression EQUALS expression
-                  | expression NEQUALS expression'''
+    '''comparison : generalexpression GT generalexpression
+                  | generalexpression LT generalexpression
+                  | generalexpression GE generalexpression
+                  | generalexpression LE generalexpression
+                  | generalexpression EQUALS generalexpression
+                  | generalexpression NEQUALS generalexpression'''
     operator = None
     if p[2] == ">": operator = ast.Gt
     elif p[2] == ">=": operator = ast.GtE

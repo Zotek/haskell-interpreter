@@ -57,6 +57,18 @@ class HaskellASTVisitor(ast.NodeVisitor):
             ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(0)), ast.Load()),
             None
         ),
+        'length': ast.FunctionDef(
+            'length',
+            ['l'],
+            ast.Attribute(ast.Name('l', ast.Load()), '!length', ast.Load()),
+            None
+        ),
+        'null': ast.FunctionDef(
+            'null',
+            ['l'],
+            ast.Compare(ast.Name('l', ast.Load()), [ast.Eq], [ast.List([], ast.Store())]),
+            None
+        ),
     }
     _funVariablesStack = []
 
@@ -152,3 +164,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
         upper = self.visit(node.upper)
         step = self.visit(node.step)
         return [lower, upper, step]
+
+    def visit_Attribute(self, node):
+        if node.attr == '!length':
+            return len(self.visit(node.value))
