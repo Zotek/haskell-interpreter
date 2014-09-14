@@ -38,7 +38,7 @@ def p_parameters(p):
 def p_funcall(p):
     '''funcall : IDENTIFIER parameters
     '''
-    p[0] = ast.Call(p[1],p[2],None,None,None)
+    p[0] = ast.Call(ast.Name(p[1],ast.Load),p[2],None,None,None)
 
 #general
 def p_assignment(p):

@@ -1,8 +1,7 @@
 import ast
 
 class HaskellASTVisitor(ast.NodeVisitor):
-    _globalVariables = {}
-    _functions = {
+    _globalVariables = {
         'fst': ast.FunctionDef(
             'fst',
             ['l'],
@@ -85,7 +84,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
         if len(self._funVariablesStack) == 0: name = self._globalVariables.get(node.id,None)
         else: name = self._funVariablesStack[0][node.id]
 
-        return self.visit(name)
+        return name
 
     def visit_BinOp(self,node):
         operator = node.op
@@ -131,14 +130,14 @@ class HaskellASTVisitor(ast.NodeVisitor):
         elif operator == ast.NotEq : return left != right
 
     def visit_FunctionDef(self, node):
-        if node.name in (self._globalVariables.keys() + self._functions.keys()):
+        if node.name in (self._globalVariables.keys() + self._globalVariables.keys()):
             print "Name already in use"
             return None
-        self._functions[node.name] = node
+        self._globalVariables[node.name] = node
         return node.name
 
     def visit_Call(self, node):
-        fun = self._functions[node.func]
+        fun = self.visit(node.func)
         parameters = map(lambda x : self.visit(x),node.args)
         self._funVariablesStack.insert(0,dict(zip(fun.args,parameters)))
         retval = self.visit(fun.body)
