@@ -1,5 +1,6 @@
 import ast
 
+
 class HaskellASTVisitor(ast.NodeVisitor):
     _globalVariables = {
         'fst': ast.FunctionDef(
@@ -81,8 +82,12 @@ class HaskellASTVisitor(ast.NodeVisitor):
 
     def visit_Name(self,node):
         name = None
-        if len(self._funVariablesStack) == 0: name = self._globalVariables.get(node.id,None)
-        else: name = self._funVariablesStack[0][node.id]
+        try:
+            name = self._funVariablesStack[0][node.id]
+        except IndexError:
+            name = self._globalVariables.get(node.id,None)
+        except KeyError:
+            name = self._globalVariables.get(node.id,None)
 
         return name
 
