@@ -48,7 +48,6 @@ def p_assignment(p):
 def p_general_expression(p):
     '''generalexpression : expression
                           | boolexpr
-                          | STRING
                           | CHAR
                           | tuple
                           | list'''
@@ -163,6 +162,10 @@ def p_list_range(p):
         p[0] = ast.Subscript(None, ast.Slice(p[2], p[6], ast.BinOp(p[4], ast.Sub, p[2])), ast.Load())
     else:
         p[0] = ast.Subscript(None, ast.Slice(p[2], p[4], ast.Num(1)), ast.Load())
+
+def p_list_STRING(p):
+    'list : STRING'
+    p[0] = ast.List(list(p[1]), ast.Store())
 
 #bool arithmetics
 
