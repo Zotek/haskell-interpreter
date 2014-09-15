@@ -1,4 +1,5 @@
 import ast
+from loopedList import LoopedList
 
 
 class HaskellASTVisitor(ast.NodeVisitor):
@@ -67,6 +68,24 @@ class HaskellASTVisitor(ast.NodeVisitor):
             'null',
             ['l'],
             ast.Compare(ast.Name('l', ast.Load()), [ast.Eq], [ast.List([], ast.Store())]),
+            None
+        ),
+        'replicate': ast.FunctionDef(
+            'replicate',
+            ['n', 'l'],
+            ast.BinOp(ast.List([ast.Name('l', ast.Load())], ast.Store()), ast.Mult, ast.Name('n', ast.Load())),
+            None
+        ),
+        'cycle': ast.FunctionDef(
+            'cycle',
+            ['l'],
+            ast.List(LoopedList(ast.Name('l', ast.Load())), ast.Store()),
+            None
+        ),
+        'repeat': ast.FunctionDef(
+            'repeat',
+            ['l'],
+            ast.List(LoopedList([ast.Name('l', ast.Load())]), ast.Store()),
             None
         ),
     }
@@ -154,7 +173,10 @@ class HaskellASTVisitor(ast.NodeVisitor):
         return tuple(map(lambda x: self.visit(x), node.elts))
 
     def visit_List(self, node):
-        return map(lambda x: self.visit(x), node.elts)
+        if isinstance(node.elts, LoopedList):
+            return LoopedList([self.visit(x) for x in self.visit(node.elts.l)], [self.visit(x) for x in self.visit(node.elts.h)])
+        else:
+            return map(lambda x: self.visit(x), node.elts)
 
     def visit_Subscript(self, node):
         if node.value is None:
