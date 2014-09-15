@@ -11,7 +11,7 @@ class LoopedList:
 
     def __getitem__(self, i):
         if isinstance(i, slice):
-            return [self.__getitem__(x) for x in range(i.start, i.stop, i.step if i.step else 1)]
+            return [self.__getitem__(x) for x in range(i.start if i.start else 0, i.stop if i.stop else 50, i.step if i.step else 1)]
         if isinstance(i, tuple):
             return [self.__getitem__(x) for x in i]
         if i < len(self.h):
