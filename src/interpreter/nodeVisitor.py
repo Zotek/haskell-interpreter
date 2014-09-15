@@ -77,7 +77,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
         return node
 
     def visit_Assign(self,node):
-        self._globalVariables[node.targets[0]]=node.value
+        self._globalVariables[node.targets[0]]=self.visit(node.value)
         return self.visit(node.value)
 
     def visit_Name(self,node):
