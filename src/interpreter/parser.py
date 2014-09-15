@@ -144,16 +144,16 @@ def p_list_empty(p):
     p[0] = ast.List([], ast.Store())
 
 def p_list_prepand(p):
-    'list : generalexpression COLON list'
-    p[0] = ast.List([p[1]] + p[3].elts, ast.Store())
+    'list : generalexpression COLON generalexpression'
+    p[0] = ast.BinOp(ast.List([p[1]], ast.Store), ast.Add, p[3])
 
 def p_list_INDEX(p):
-    'generalexpression : list INDEX expression'
+    'generalexpression : generalexpression INDEX expression'
     p[0] = ast.Subscript(p[1], ast.Index(p[3]), ast.Load())
 
 def p_list_CONCAT(p):
-    'list : list CONCAT list'
-    p[0] = ast.List(p[1].elts + p[3].elts, ast.Store())
+    'list : generalexpression CONCAT generalexpression'
+    p[0] = ast.BinOp(p[1], ast.Add, p[3])
 
 def p_list_range(p):
     '''list : LBRACKET generalexpression COMMA generalexpression RANGE generalexpression RBRACKET
