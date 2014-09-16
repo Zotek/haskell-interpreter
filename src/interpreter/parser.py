@@ -100,7 +100,7 @@ def p_sequence(p):
     p[0] = [p[1], p[3]]
 
 def p_sequence_generalexpression(p):
-    'sequence : sequence COMMA atom'
+    'sequence : sequence COMMA statement'
     p[0] = p[1] + [p[3]]
 
 def p_list(p):
@@ -108,7 +108,7 @@ def p_list(p):
     p[0] = ast.List(p[2], ast.Store())
 
 def p_list_singleelem(p):
-    'list : LBRACKET atom RBRACKET'
+    'list : LBRACKET statement RBRACKET'
     p[0] = ast.List([p[2]], ast.Store())
 
 def p_list_empty(p):
