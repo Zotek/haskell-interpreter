@@ -6,85 +6,85 @@ class HaskellASTVisitor(ast.NodeVisitor):
     _globalVariables = {
         'fst': ast.FunctionDef(
             'fst',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(0)), ast.Load()),
             None
         ),
         'snd': ast.FunctionDef(
             'snd',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(1)), ast.Load()),
             None
         ),
         'take': ast.FunctionDef(
             'take',
-            ['n', 'l'],
+            [ast.Name('n', ast.Store()), ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(None, ast.Name('n', ast.Load), None), ast.Load()),
             None
         ),
         'drop': ast.FunctionDef(
             'drop',
-            ['n', 'l'],
+            [ast.Name('n', ast.Store()), ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(ast.Name('n', ast.Load), None, None), ast.Load()),
             None
         ),
         'reverse': ast.FunctionDef(
             'reverse',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(None, None, ast.Num(-1)), ast.Load()),
             None
         ),
         'init': ast.FunctionDef(
             'init',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(None, ast.Num(-1), None), ast.Load()),
             None
         ),
         'tail': ast.FunctionDef(
             'tail',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Slice(ast.Num(1), None, None), ast.Load()),
             None
         ),
         'last': ast.FunctionDef(
             'last',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(-1)), ast.Load()),
             None
         ),
         'head': ast.FunctionDef(
             'head',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Subscript(ast.Name('l', ast.Load()), ast.Index(ast.Num(0)), ast.Load()),
             None
         ),
         'length': ast.FunctionDef(
             'length',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Attribute(ast.Name('l', ast.Load()), '!length', ast.Load()),
             None
         ),
         'null': ast.FunctionDef(
             'null',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.Compare(ast.Name('l', ast.Load()), [ast.Eq], [ast.List([], ast.Store())]),
             None
         ),
         'replicate': ast.FunctionDef(
             'replicate',
-            ['n', 'l'],
+            [ast.Name('n', ast.Store()), ast.Name('l', ast.Store())],
             ast.BinOp(ast.List([ast.Name('l', ast.Load())], ast.Store()), ast.Mult, ast.Name('n', ast.Load())),
             None
         ),
         'cycle': ast.FunctionDef(
             'cycle',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.List(LoopedList(ast.Name('l', ast.Load())), ast.Store()),
             None
         ),
         'repeat': ast.FunctionDef(
             'repeat',
-            ['l'],
+            [ast.Name('l', ast.Store())],
             ast.List(LoopedList([ast.Name('l', ast.Load())]), ast.Store()),
             None
         ),
@@ -97,7 +97,7 @@ class HaskellASTVisitor(ast.NodeVisitor):
 
     def visit_Assign(self,node):
         result = self.visit(node.value)
-        self._globalVariables[node.targets[0]] = result
+        self._globalVariables[node.targets.id] = result
         return result
 
     def visit_Name(self,node):
@@ -155,16 +155,17 @@ class HaskellASTVisitor(ast.NodeVisitor):
         elif operator == ast.NotEq : return left != right
 
     def visit_FunctionDef(self, node):
-        if node.name in (self._globalVariables.keys() + self._globalVariables.keys()):
+        if node.name.id in (self._globalVariables.keys() + self._globalVariables.keys()):
             print "Name already in use"
             return None
-        self._globalVariables[node.name] = node
-        return node.name
+        self._globalVariables[node.name.id] = node
+        return node.name.id
 
     def visit_Call(self, node):
         fun = self.visit(node.func)
         parameters = map(lambda x : self.visit(x),node.args)
-        self._funVariablesStack.insert(0,dict(zip(fun.args,parameters)))
+        args = map(lambda x : x.id,fun.args)
+        self._funVariablesStack.insert(0,dict(zip(args,parameters)))
         retval = self.visit(fun.body)
         self._funVariablesStack.pop(0)
         return retval
